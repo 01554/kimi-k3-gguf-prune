@@ -54,9 +54,17 @@ def _shards(first: Path) -> list[Path]:
 
 
 def _load_plan(path: Path, n_layers_hint: int | None = None) -> dict[int, np.ndarray]:
-    """-> {moe_layer_index: keep_ids in keep order}. Accepts kimi-k3-mlx plan shapes."""
+    """-> {moe_layer_index: keep_ids in keep order}.
+
+    Accepts kimi-k3-mlx's reap_plan.json (`layers[str(L)] = {"keep": [...]}`,
+    layer indices matching model.layers.N == blk.N) or a bare
+    `{"keep": {layer: [...]}}` mapping as the tests use.
+    """
     raw = json.load(open(path))
-    keep = raw.get("keep", raw)
+    if "layers" in raw:
+        keep = {k: v["keep"] for k, v in raw["layers"].items()}
+    else:
+        keep = raw.get("keep", raw)
     if isinstance(keep, list):
         plan = {i: np.asarray(v, dtype=np.int64) for i, v in enumerate(keep)}
     else:

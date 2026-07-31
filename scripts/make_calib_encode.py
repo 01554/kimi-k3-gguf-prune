@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+"""English + code calibration corpus for REAP saliency on Kimi-K3.
+
+  scripts/make_calib_encode.py --out out/calib_encode.txt --mb 12 \
+      --src /Users/hello/mac_workspace/models/kimi-k3-src
+
+This deployment serves coding agents in English only, so the mix drops every
+other language on purpose. kimi-k3-mlx measured what that trade buys and costs:
+the en+code subset build retained 68.4% of saliency mass vs 59.1% for the
+11-source mixed corpus — and collapsed entirely on Chinese, which is the point:
+whatever the corpus under-represents is what the prune deletes.
+
+Implemented by monkeypatching MIX in kimi-k3-mlx's make_calib.py rather than
+editing it: that file belongs to the other repo and its default mix is its own
+deployment choice; this repo's choice lives here.
+
+Mix (token shares, same 4:3 code:web ratio as the measured en+code subset):
+    35%  code-multi    OpenCoder annealing corpus
+    20%  code-python   real Python files
+    45%  web-en        FineWeb
+"""
+
+import runpy
+import sys
+from pathlib import Path
+
+MLX_SCRIPTS = Path("/Users/hello/mac_workspace/kimi-k3-mlx/scripts")
+
+sys.path.insert(0, str(MLX_SCRIPTS))
+import make_calib  # noqa: E402
+
+make_calib.MIX = [
+    ("code-multi", dict(path="OpenCoder-LLM/opc-annealing-corpus",
+                        name="algorithmic_corpus", split="train"), "text", 0.35, None),
+    ("code-python", dict(path="codeparrot/codeparrot-clean-valid",
+                         split="train"), "content", 0.20, None),
+    ("web-en", dict(path="HuggingFaceFW/fineweb",
+                    name="sample-10BT", split="train"), "text", 0.45, None),
+]
+
+if __name__ == "__main__":
+    make_calib.main()
