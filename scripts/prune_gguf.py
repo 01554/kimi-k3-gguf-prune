@@ -174,6 +174,11 @@ def cmd_inspect(args):
 
 
 def cmd_prune(args):
+    """Two passes so peak RAM stays at one sliced tensor (~1.5 GB), not the
+    ~400 GB of expert slabs the output holds in total: pass 1 registers tensor
+    *info* only (gguf-py needs every offset before the data section starts),
+    pass 2 materializes and streams tensors one at a time via
+    write_tensor_data(), which frees each after writing."""
     shards = _shards(Path(args.src))
     readers = [GGUFReader(p) for p in shards]
     r0 = readers[0]
@@ -188,41 +193,54 @@ def cmd_prune(args):
                                     "general.architecture": None})
     writer.add_uint32(f"{arch}.expert_count", n_keep)
 
+    def emit(t):
+        """-> (materialize() -> uint8 array, byte_shape, out_nbytes)"""
+        m = EXPERT_RE.match(t.name) or ROUTER_RE.match(t.name)
+        b = BIAS_RE.match(t.name)
+        if m:
+            layer = int(m.group(1))
+            keep = plan.get(layer)
+            if keep is None:
+                raise SystemExit(f"{t.name}: layer {layer} missing from plan")
+            slab = int(t.n_bytes) // n_expert
+            # byte shape from the FULL tensor (per-row bytes are unchanged by
+            # pruning), then shrink the expert axis
+            shape = _byte_shape(t, [n_expert] + [int(d) for d in t.shape[:-1]][::-1])
+            shape[0] = n_keep
+            mat = lambda: np.asarray(t.data).reshape(-1).view(np.uint8) \
+                            .reshape(n_expert, slab)[keep].copy()
+            return mat, shape, slab * n_keep, np.uint8
+        if b:
+            keep = plan[int(b.group(1))]
+            mat = lambda: np.asarray(t.data).reshape(n_expert)[keep].copy()
+            return mat, [n_keep], n_keep * np.asarray(t.data).dtype.itemsize, np.asarray(t.data).dtype
+        mat = lambda: np.asarray(t.data).reshape(-1).view(np.uint8)
+        return mat, _byte_shape(t, [int(d) for d in t.shape][::-1]), int(t.n_bytes), np.uint8
+
+    # pass 1: tensor info in a fixed order
+    entries = []
     total_in = total_out = 0
     for reader in readers:
         for t in reader.tensors:
             total_in += int(t.n_bytes)
-            m = EXPERT_RE.match(t.name) or ROUTER_RE.match(t.name)
-            b = BIAS_RE.match(t.name)
-            if m:
-                layer = int(m.group(1))
-                keep = plan.get(layer)
-                if keep is None:
-                    raise SystemExit(f"{t.name}: layer {layer} missing from plan")
-                out, byte_shape = _slab_slice(t, keep, n_expert)
-                writer.add_tensor(t.name, out, raw_shape=byte_shape,
-                                  raw_dtype=t.tensor_type)
-                total_out += out.nbytes
-            elif b:
-                layer = int(b.group(1))
-                keep = plan[layer]
-                vals = np.asarray(t.data).reshape(n_expert)[keep].copy()
-                # float-typed numpy data: shape stays in elements (the byte
-                # conversion in gguf-py only applies to uint8 input)
-                writer.add_tensor(t.name, vals, raw_shape=[len(keep)],
-                                  raw_dtype=t.tensor_type)
-                total_out += vals.nbytes
-            else:
-                raw = np.asarray(t.data).reshape(-1).view(np.uint8)
-                writer.add_tensor(t.name, raw,
-                                  raw_shape=_byte_shape(t, [int(d) for d in t.shape][::-1]),
-                                  raw_dtype=t.tensor_type)
-                total_out += int(t.n_bytes)
+            mat, shape, nbytes, dtype = emit(t)
+            writer.add_tensor_info(t.name, shape, np.dtype(dtype), nbytes,
+                                   raw_dtype=t.tensor_type)
+            entries.append((t.name, mat, nbytes))
+            total_out += nbytes
 
     print(f"writing {total_out/1e9:.1f} GB (from {total_in/1e9:.1f} GB) -> {args.out}")
     writer.write_header_to_file()
     writer.write_kv_data_to_file()
-    writer.write_tensors_to_file(progress=True)
+    writer.write_ti_data_to_file()
+
+    # pass 2: stream data in the same order, one tensor resident at a time
+    done = 0
+    for i, (name, mat, nbytes) in enumerate(entries):
+        writer.write_tensor_data(mat())
+        done += nbytes
+        if i % 100 == 0 or i == len(entries) - 1:
+            print(f"  [{i+1:>5}/{len(entries)}] {done/1e9:>6.1f} / {total_out/1e9:.1f} GB", flush=True)
     writer.close()
     print("done")
 
