@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 *.gguf
 out/
+
+# third-party reference material, do not redistribute
+k3_tech_report.pdf
