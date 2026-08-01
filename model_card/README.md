@@ -58,9 +58,10 @@ measured and what has not.
 |---|---|
 | Loads and runs on one 512 GB M3 Ultra, full Metal offload | measured: 441.4 GB, ~220 s load |
 | Speed | measured: ~47 tok/s prefill, ~3.0 tok/s decode |
-| Drives Moonshot's Kimi Code CLI end-to-end (24 tools, ~24k-token system prompt) | 3/3 SWE-Lancer IC-SWE Diamond tasks solved, $2,000/$2,000, containerized grading untouched |
+| Drives Moonshot's Kimi Code CLI end-to-end (24 tools, ~24k-token system prompt) | 8 SWE-Lancer IC-SWE Diamond tasks run end-to-end: 3/3 on K2.7-solved tasks ($2,000/$2,000) plus 2/5 on K2.7-failed tasks; grading untouched |
 | Survives the exact agentic request that deterministically breaks the 4-bit MLX REAP builds | replayed byte-identical request → clean on-task tool call |
 | Pruning is lossless for surviving experts | identity-prune is byte-identical (pinned by tests); router/norms stay F32 |
+| Not a strict subset of the 2-bit K2.7 baseline | **2/5 solved** ($1,500) on the five cheapest tasks that K2.7-Q2 failed |
 | en+code saliency retention | 93.53% of routed saliency mass at keep-640 |
 
 **Not verified（未確認）:**
@@ -68,7 +69,6 @@ measured and what has not.
 | open question | status |
 |---|---|
 | Full 198-task SWE-Lancer performance | only 3 tasks run; a full run takes weeks at 3 tok/s |
-| Tasks the original K2.7-Q2 run failed | 5-task probe **in progress** at time of writing; card will be updated |
 | Perplexity / MMLU / standard benchmarks | not measured at all |
 | Long-context quality beyond ~30k prompt tokens | context is set to 131k but only exercised to ~30k |
 | Chinese, Japanese, and every other language | expected broken by design (en+code calibration); degree not measured |
