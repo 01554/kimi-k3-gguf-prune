@@ -2,8 +2,9 @@
 license: other
 license_name: modified-mit
 license_link: https://huggingface.co/moonshotai/Kimi-K3/blob/main/LICENSE
-base_model: moonshotai/Kimi-K3
-base_model_relation: quantized
+# direct base: this is an expert-prune of Unsloth's 1-bit quant, whose bytes it
+# inherits verbatim; Moonshot's original is the grandparent via that quant
+base_model: unsloth/Kimi-K3-GGUF
 tags:
   - kimi-k3
   - gguf
