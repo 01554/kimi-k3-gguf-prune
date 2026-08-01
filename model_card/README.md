@@ -137,11 +137,12 @@ Expert saliency and the keep-640 selection were produced with the calibration
 scripts from pipenetwork's **kimi-k3-mlx** repo (`reap_calibrate.py` /
 `reap_plan.py` — REAP saliency `gate·‖expert output‖` streamed layer-by-layer
 over the 1.56 TB MXFP4 source, peak ~58 GB RAM), with the calibration mix
-swapped to English + code only. The only new code is a small script that
-applies the plan to the GGUF: a byte-slab slice along the outermost expert axis
-(expert slabs are contiguous and quantization blocks never cross them), with
-the router rows and `exp_probs_b` renumbered to the keep order. An identity
-prune reproduces the input byte-for-byte.
+swapped to English + code only. The only new code is
+[a small script](https://github.com/01554/kimi-k3-gguf-prune) that applies the
+plan to the GGUF: a byte-slab slice along the outermost expert axis (expert
+slabs are contiguous and quantization blocks never cross them), with the router
+rows and `exp_probs_b` renumbered to the keep order. An identity prune
+reproduces the input byte-for-byte (pinned by tests).
 
 Credits: [Moonshot AI](https://huggingface.co/moonshotai) (Kimi-K3, Kimi Code
 CLI), [Unsloth](https://huggingface.co/unsloth) (dynamic 1-bit quant whose
