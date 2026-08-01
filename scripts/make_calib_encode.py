@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """English + code calibration corpus for REAP saliency on Kimi-K3.
 
+  KIMI_K3_MLX_SCRIPTS=/path/to/kimi-k3-mlx/scripts \
   scripts/make_calib_encode.py --out out/calib_encode.txt --mb 12 \
-      --src /Users/hello/mac_workspace/models/kimi-k3-src
+      --src /path/to/kimi-k3-src
 
 This deployment serves coding agents in English only, so the mix drops every
 other language on purpose. kimi-k3-mlx measured what that trade buys and costs:
@@ -20,11 +21,19 @@ Mix (token shares, same 4:3 code:web ratio as the measured en+code subset):
     45%  web-en        FineWeb
 """
 
-import runpy
+import os
 import sys
 from pathlib import Path
 
-MLX_SCRIPTS = Path("/Users/hello/mac_workspace/kimi-k3-mlx/scripts")
+MLX_SCRIPTS = Path(os.environ.get(
+    "KIMI_K3_MLX_SCRIPTS",
+    Path(__file__).resolve().parent.parent.parent / "kimi-k3-mlx" / "scripts",
+))
+if not (MLX_SCRIPTS / "make_calib.py").exists():
+    raise SystemExit(
+        f"kimi-k3-mlx scripts not found at {MLX_SCRIPTS}; "
+        "set KIMI_K3_MLX_SCRIPTS to that repo's scripts/ directory"
+    )
 
 sys.path.insert(0, str(MLX_SCRIPTS))
 import make_calib  # noqa: E402
