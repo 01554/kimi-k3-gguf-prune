@@ -133,12 +133,15 @@ max_context_size = 131072
 
 ## How it was made
 
-[kimi-k3-gguf-prune](https://github.com/hellohazime/kimi-k3-gguf-prune) —
-REAP saliency (`gate·‖expert output‖` streamed layer-by-layer over the 1.56 TB
-MXFP4 source, peak ~58 GB RAM), uniform keep-640 plan, then a pure byte-slab
-slice of the GGUF along the outermost expert axis with the router rows and
-`exp_probs_b` renumbered to the keep order. An identity prune is byte-identical
-by test.
+Expert saliency and the keep-640 selection were produced with the calibration
+scripts from pipenetwork's **kimi-k3-mlx** repo (`reap_calibrate.py` /
+`reap_plan.py` — REAP saliency `gate·‖expert output‖` streamed layer-by-layer
+over the 1.56 TB MXFP4 source, peak ~58 GB RAM), with the calibration mix
+swapped to English + code only. The only new code is a small script that
+applies the plan to the GGUF: a byte-slab slice along the outermost expert axis
+(expert slabs are contiguous and quantization blocks never cross them), with
+the router rows and `exp_probs_b` renumbered to the keep order. An identity
+prune reproduces the input byte-for-byte.
 
 Credits: [Moonshot AI](https://huggingface.co/moonshotai) (Kimi-K3, Kimi Code
 CLI), [Unsloth](https://huggingface.co/unsloth) (dynamic 1-bit quant whose
