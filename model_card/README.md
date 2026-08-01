@@ -134,7 +134,7 @@ max_context_size = 131072
 ## How it was made
 
 Expert saliency and the keep-640 selection were produced with the calibration
-scripts from pipenetwork's **kimi-k3-mlx** repo (`reap_calibrate.py` /
+scripts from pipenetwork's [kimi-k3-mlx](https://github.com/PipeNetwork/kimi-k3-mlx) repo (`reap_calibrate.py` /
 `reap_plan.py` — REAP saliency `gate·‖expert output‖` streamed layer-by-layer
 over the 1.56 TB MXFP4 source, peak ~58 GB RAM), with the calibration mix
 swapped to English + code only. The only new code is
@@ -148,5 +148,5 @@ Credits: [Moonshot AI](https://huggingface.co/moonshotai) (Kimi-K3, Kimi Code
 CLI), [Unsloth](https://huggingface.co/unsloth) (dynamic 1-bit quant whose
 protected router/norms this build inherits), [Cerebras
 REAP](https://github.com/CerebrasResearch/reap) (saliency criterion),
-[kimi-k3-mlx](https://huggingface.co/pipenetwork) (calibration machinery and
+[kimi-k3-mlx](https://github.com/PipeNetwork/kimi-k3-mlx) (calibration machinery and
 the measured warnings this build steers by).
