@@ -46,7 +46,35 @@ English + code calibration corpus.
 | size | 441.4 GB (fits 512 GB unified memory with KV + compute headroom) |
 | measured | Mac Studio M3 Ultra 512 GB: ~47 tok/s prefill, ~3.0 tok/s decode, full Metal offload |
 
-## Verified end to end, not just perplexity
+## Verified vs. not verified / 確認済みと未確認
+
+Honest scorecard. This model is three days old; here is exactly what has been
+measured and what has not.
+
+**Verified（確認済み）:**
+
+| claim | evidence |
+|---|---|
+| Loads and runs on one 512 GB M3 Ultra, full Metal offload | measured: 441.4 GB, ~220 s load |
+| Speed | measured: ~47 tok/s prefill, ~3.0 tok/s decode |
+| Drives Moonshot's Kimi Code CLI end-to-end (24 tools, ~24k-token system prompt) | 3/3 SWE-Lancer IC-SWE Diamond tasks solved, $2,000/$2,000, containerized grading untouched |
+| Survives the exact agentic request that deterministically breaks the 4-bit MLX REAP builds | replayed byte-identical request → clean on-task tool call |
+| Pruning is lossless for surviving experts | identity-prune is byte-identical (pinned by tests); router/norms stay F32 |
+| en+code saliency retention | 93.53% of routed saliency mass at keep-640 |
+
+**Not verified（未確認）:**
+
+| open question | status |
+|---|---|
+| Full 198-task SWE-Lancer performance | only 3 tasks run; a full run takes weeks at 3 tok/s |
+| Tasks the original K2.7-Q2 run failed | 5-task probe **in progress** at time of writing; card will be updated |
+| Perplexity / MMLU / standard benchmarks | not measured at all |
+| Long-context quality beyond ~30k prompt tokens | context is set to 131k but only exercised to ~30k |
+| Chinese, Japanese, and every other language | expected broken by design (en+code calibration); degree not measured |
+| Vision | **mmproj not included**; this prune touched text tensors only. Unsloth's mmproj may work but is untested here |
+| Sustained multi-day agent sessions | longest observed run: ~68 min/task |
+
+## Verification details
 
 Driven by [Kimi Code CLI](https://github.com/MoonshotAI/kimi-code) (Moonshot's
 own agent, 24 tools, ~24k-token system prompt) inside SWE-Lancer task
