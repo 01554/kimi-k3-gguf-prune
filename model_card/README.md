@@ -5,6 +5,7 @@ license_link: https://huggingface.co/moonshotai/Kimi-K3/blob/main/LICENSE
 # direct base: this is an expert-prune of Unsloth's 1-bit quant, whose bytes it
 # inherits verbatim; Moonshot's original is the grandparent via that quant
 base_model: unsloth/Kimi-K3-GGUF
+pipeline_tag: text-generation
 tags:
   - kimi-k3
   - gguf
