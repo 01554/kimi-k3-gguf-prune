@@ -56,15 +56,16 @@ Honest scorecard: exactly what has been measured, and what has not.
 | Survives the exact agentic request that deterministically breaks the 4-bit MLX REAP builds | replayed byte-identical request → clean on-task tool call |
 | Pruning is lossless for surviving experts | identity-prune is byte-identical (pinned by tests); router/norms stay F32 |
 | en+code saliency retention | 93.53% of routed saliency mass at keep-640 |
+| Held-out perplexity (this build) | measured, 48×2048-token chunks: code **2.00** / en **7.44** / zh 7.93 / **ja 19.46** — the deliberate en+code trade, quantified |
 
 **Not verified:**
 
 | open question | status |
 |---|---|
 | Full 198-task SWE-Lancer performance | 8 tasks run so far; a full run takes weeks at 3 tok/s |
-| Perplexity / MMLU / standard benchmarks | not measured at all |
+| MMLU / standard benchmarks | not measured (held-out perplexity is measured, see above) |
 | Long-context quality beyond ~30k prompt tokens | context is set to 131k but only exercised to ~30k |
-| Chinese, Japanese, and every other language | expected broken by design (en+code calibration); degree not measured |
+| Chinese, Japanese generation quality | perplexity is measured (ja ≈2.6× en); generation/agentic quality in those languages is not |
 | Vision | **mmproj not included**; this prune touched text tensors only. Unsloth's mmproj may work but is untested here |
 | Sustained multi-day agent sessions | longest observed run: ~68 min/task |
 
