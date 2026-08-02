@@ -34,6 +34,9 @@ K2.7-Code quant failed.**
 | size | 441.4 GB (fits 512 GB unified memory with KV + compute headroom) |
 | measured | Mac Studio M3 Ultra 512 GB: ~47 tok/s prefill, ~3.0 tok/s decode, full Metal offload |
 
+
+Full write-up — how it was built, the five failed hypotheses, and the verification: [English](https://zenn.dev/hellohazime/articles/kimi_k3_reap640_512gb_mac#english-version) / [日本語](https://zenn.dev/hellohazime/articles/kimi_k3_reap640_512gb_mac).
+
 This is a coding-agent build, not a general-purpose one: Chinese, Japanese and
 other languages were deliberately sacrificed by the calibration choice (the
 pruned experts are the ones those languages used).
