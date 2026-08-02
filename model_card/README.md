@@ -35,7 +35,7 @@ K2.7-Code quant failed.**
 | measured | Mac Studio M3 Ultra 512 GB: ~47 tok/s prefill, ~3.0 tok/s decode, full Metal offload |
 
 
-Full write-up — how it was built, the five failed hypotheses, and the verification: [English](https://zenn.dev/hellohazime/articles/kimi_k3_reap640_512gb_mac#english-version) / [日本語](https://zenn.dev/hellohazime/articles/kimi_k3_reap640_512gb_mac).
+Full write-up — how it was built, what failed along the way, and the verification: [English](https://zenn.dev/hellohazime/articles/kimi_k3_reap640_512gb_mac#english-version) / [日本語](https://zenn.dev/hellohazime/articles/kimi_k3_reap640_512gb_mac).
 
 This is a coding-agent build, not a general-purpose one: Chinese, Japanese and
 other languages were deliberately sacrificed by the calibration choice (the
@@ -100,7 +100,7 @@ cmake -B build -DGGML_METAL=ON        # Apple Silicon; use -DGGML_CUDA=ON on NVI
 cmake --build build --config Release -j --target llama-server
 
 ./build/bin/llama-server -m Kimi-K3-REAP640-IQ1_S-00001-of-00010.gguf \
-    -ngl 99 -c 131072 --jinja --cache-reuse 0 \
+    --port 8090 -ngl 99 -c 131072 --jinja --cache-reuse 0 \
     --temp 1.0 --top-p 0.95
 ```
 
@@ -114,12 +114,12 @@ Point any OpenAI-compatible agent at it. Kimi Code CLI config:
 
 ```toml
 default_model = "local-k3"
-[providers.local-mlx]
+[providers.local-llamacpp]
 type = "openai"
 base_url = "http://127.0.0.1:8090/v1"
 api_key = "local"
 [models.local-k3]
-provider = "local-mlx"
+provider = "local-llamacpp"
 model = "k3"
 max_context_size = 131072
 ```
@@ -161,4 +161,4 @@ K3 の最小の GGUF(Unsloth の 1-bit 版)でも 594 GB あり、512 GB の Mac
 意図的に犠牲にしています(削った expert がそれらを担っていたため)。
 
 作った経緯と手法の詳細(日本語):
-[594GBのKimi K3を441GBに枝刈りして、Mac Studio 1台でエージェントとして動かした](https://zenn.dev/hellohazime/articles/kimi_k3_reap640_512gb_mac)
+[Kimi K3を441GBに枝刈りして、Mac Studio 1台で動かした](https://zenn.dev/hellohazime/articles/kimi_k3_reap640_512gb_mac)
