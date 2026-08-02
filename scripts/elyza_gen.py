@@ -27,7 +27,9 @@ def ask(port, text, effort, max_tokens, retries=2):
         "max_tokens": max_tokens,
         "temperature": 1.0,
         "top_p": 0.95,
-        "reasoning_effort": effort,
+        # the template's real knob; measured: thinking 93 chars vs 760 for the
+        # top-level reasoning_effort field on the same prompt
+        "chat_template_kwargs": {"thinking_effort": effort},
         "stream": False,
     }
     last = None
