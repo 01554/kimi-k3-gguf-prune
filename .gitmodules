@@ -1,0 +1,3 @@
+[submodule "kimi-k3-mlx"]
+	path = kimi-k3-mlx
+	url = https://github.com/PipeNetwork/kimi-k3-mlx

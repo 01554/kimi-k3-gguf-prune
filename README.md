@@ -31,6 +31,31 @@ MoE layers.
 | 672 | ~456 GB | same footprint as the MLX 451 GB builds |
 | **640** | **~437 GB** | default — headroom for KV + compute |
 
+
+## Prerequisites: PipeNetwork/kimi-k3-mlx (the brains of the selection)
+
+The calibration and expert-selection stages are **not this repo's code** — they
+run [PipeNetwork/kimi-k3-mlx](https://github.com/PipeNetwork/kimi-k3-mlx),
+included here as a git submodule:
+
+```bash
+git submodule update --init   # pulls kimi-k3-mlx into ./kimi-k3-mlx
+```
+
+What lives where:
+
+| stage | code | repo |
+|---|---|---|
+| corpus assembly | [make_calib.py](https://github.com/PipeNetwork/kimi-k3-mlx/blob/main/scripts/make_calib.py) (this repo's `make_calib_*.py` only swap the MIX) | kimi-k3-mlx |
+| expert saliency measurement | [reap_calibrate.py](https://github.com/PipeNetwork/kimi-k3-mlx/blob/main/scripts/reap_calibrate.py) | kimi-k3-mlx |
+| keep-list planning | [reap_plan.py](https://github.com/PipeNetwork/kimi-k3-mlx/blob/main/scripts/reap_plan.py) | kimi-k3-mlx |
+| GGUF slab slicing + router renumbering | `scripts/prune_gguf.py` | this repo |
+
+The upstream code is referenced rather than vendored because kimi-k3-mlx does
+not currently ship a license for its own sources; a submodule keeps it under
+its authors' terms. The saliency stage additionally needs `mlx` (Apple Silicon)
+and reads the 1.56 TB MXFP4 source model.
+
 ## Pipeline
 
 1. **Baseline probe** — replay a captured, deterministically-failing Kimi CLI

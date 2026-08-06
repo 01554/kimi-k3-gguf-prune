@@ -25,15 +25,22 @@ import os
 import sys
 from pathlib import Path
 
-MLX_SCRIPTS = Path(os.environ.get(
-    "KIMI_K3_MLX_SCRIPTS",
-    Path(__file__).resolve().parent.parent.parent / "kimi-k3-mlx" / "scripts",
-))
-if not (MLX_SCRIPTS / "make_calib.py").exists():
+def _find_mlx_scripts():
+    env = os.environ.get("KIMI_K3_MLX_SCRIPTS")
+    here = Path(__file__).resolve()
+    candidates = [Path(env)] if env else [
+        here.parent.parent / "kimi-k3-mlx" / "scripts",         # git submodule
+        here.parent.parent.parent / "kimi-k3-mlx" / "scripts",  # sibling clone
+    ]
+    for c in candidates:
+        if (c / "make_calib.py").exists():
+            return c
     raise SystemExit(
-        f"kimi-k3-mlx scripts not found at {MLX_SCRIPTS}; "
-        "set KIMI_K3_MLX_SCRIPTS to that repo's scripts/ directory"
+        "kimi-k3-mlx scripts not found. Run `git submodule update --init`, "
+        "clone PipeNetwork/kimi-k3-mlx next to this repo, or set KIMI_K3_MLX_SCRIPTS."
     )
+
+MLX_SCRIPTS = _find_mlx_scripts()
 
 sys.path.insert(0, str(MLX_SCRIPTS))
 import make_calib  # noqa: E402
