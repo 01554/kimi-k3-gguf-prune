@@ -16,7 +16,9 @@ editing it: that file belongs to the other repo and its default mix is its own
 deployment choice; this repo's choice lives here.
 
 Mix (token shares, same 4:3 code:web ratio as the measured en+code subset):
-    35%  code-multi    OpenCoder annealing corpus
+    35%  code-multi    OpenCoder annealing corpus ("multi" is the upstream
+                       label; measured content is ~62% detected-Python, ~0%
+                       other named languages -- effectively algorithmic Python)
     20%  code-python   real Python files
     45%  web-en        FineWeb
 """
