@@ -78,7 +78,9 @@ layer. Full 8-task result, one attempt per task, same protocol as REAP640:
 been solved by anything **we** had tested — not the 2-bit K2.7-Code baseline,
 not REAP640, and not the full-896-expert UD-IQ2_XXS streamed from SSD. Other
 people's pruned K3 builds exist and we have not run them on these tasks.
-Grading is stock SWE-Lancer, untouched. Two of the five differential tasks hit a harness config error on
+Grading is stock SWE-Lancer, untouched. Exact task IDs, selection rules and
+per-task results for every experiment:
+[`evals/` in the GitHub repo](https://github.com/01554/kimi-k3-gguf-prune/tree/main/evals). Two of the five differential tasks hit a harness config error on
 the first scheduling (the model was never invoked) and were re-run once; the
 27353_776 failure was a genuine attempt and was **not** re-rolled.
 
