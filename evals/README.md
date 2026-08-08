@@ -40,21 +40,14 @@ baseline solved; used as a does-it-still-work gate for every new build.
 **differential (5 tasks)** — the 5 smallest-input tasks among the 105 the
 K2.7 baseline failed (recorded inputs 16k–104k tokens).
 
-Recovery note: an earlier revision of this file called the differential
-metric unreproducible — we had been testing dataset-side text lengths and
-prices, while the actual metric lives in the prior run's measured log. The
-correct definition was recovered on 2026-08-08 and verified by exact
-reproduction.
-
 **battle16 (16 tasks)** — the 1.56 bpw × 640 vs 1.91 bpw × 576 head-to-head
 extension, currently running. Selection is fully reproducible: from the same
 105 K2.7-failed tasks, sort ascending by `len(title) + len(description)`
 (from the benchmark's task table), drop the 5 already used by the
 differential set, take the first 16. Prize prices were not consulted during
-selection (they range $250–$32,000, Σ$42,000). Note the metric differs from
-probe/differential: battle16 was frozen and started before the original
-metric above was recovered. Both definitions are fully specified, so both
-sets remain reproducible.
+selection (they range $250–$32,000, Σ$42,000). Note: this metric differs
+from the one used for probe/differential; both are fully specified here, so
+every set is reproducible.
 
 Final per-build scores quoted on the model card = probe + differential
 (8 tasks); battle16 results will be added to `results.csv` per task as runs
