@@ -27,22 +27,34 @@ publish IDs, prices, selection rules and outcomes only.
 
 ## Task sets
 
-**probe (3 tasks)** — tasks the 341 GB 2-bit K2.7-Code baseline solved in our
-[earlier full 198-task run](https://zenn.dev/hellohazime/articles/kimi_k27_code_swelancer_local);
-used as a does-it-still-work gate for every new build.
+Probe and differential were both selected by one metric: the **`input_tokens`
+column of the K2.7 baseline's full-run `results.csv`** — i.e., the input
+volume each task actually consumed in our
+[earlier 198-task K2.7 run](https://zenn.dev/hellohazime/articles/kimi_k27_code_swelancer_local),
+agent trajectory included. Sorting ascending and taking the head reproduces
+both selections exactly, order and all.
 
-**differential (5 tasks)** — from the 105 tasks that K2.7 baseline failed,
-the five with the smallest task inputs. Honest note: the exact size metric
-used for this pick was lost (it predates our records; we could not reproduce
-it from title/description lengths or price). The five task IDs stand as
-published.
+**probe (3 tasks)** — the 3 smallest-input tasks among the 93 the K2.7
+baseline solved; used as a does-it-still-work gate for every new build.
+
+**differential (5 tasks)** — the 5 smallest-input tasks among the 105 the
+K2.7 baseline failed (recorded inputs 16k–104k tokens).
+
+Recovery note: an earlier revision of this file called the differential
+metric unreproducible — we had been testing dataset-side text lengths and
+prices, while the actual metric lives in the prior run's measured log. The
+correct definition was recovered on 2026-08-08 and verified by exact
+reproduction.
 
 **battle16 (16 tasks)** — the 1.56 bpw × 640 vs 1.91 bpw × 576 head-to-head
 extension, currently running. Selection is fully reproducible: from the same
 105 K2.7-failed tasks, sort ascending by `len(title) + len(description)`
 (from the benchmark's task table), drop the 5 already used by the
 differential set, take the first 16. Prize prices were not consulted during
-selection (they range $250–$32,000, Σ$42,000).
+selection (they range $250–$32,000, Σ$42,000). Note the metric differs from
+probe/differential: battle16 was frozen and started before the original
+metric above was recovered. Both definitions are fully specified, so both
+sets remain reproducible.
 
 Final per-build scores quoted on the model card = probe + differential
 (8 tasks); battle16 results will be added to `results.csv` per task as runs
