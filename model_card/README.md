@@ -2,8 +2,8 @@
 license: other
 license_name: modified-mit
 license_link: https://huggingface.co/moonshotai/Kimi-K3/blob/main/LICENSE
-# direct base: this is an expert-prune of Unsloth's 1-bit quant, whose bytes it
-# inherits verbatim; Moonshot's original is the grandparent via that quant
+# direct base: these are expert-prunes of Unsloth's dynamic quants, whose bytes
+# they inherit verbatim; Moonshot's original is the grandparent via those quants
 base_model: unsloth/Kimi-K3-GGUF
 pipeline_tag: text-generation
 tags:
@@ -15,79 +15,91 @@ tags:
   - mac-studio
 ---
 
-# Kimi-K3-REAP640-IQ1_S-GGUF
+# Kimi-K3, expert-pruned to fit in 512 GB of memory.
 
-**Kimi-K3 that fits and runs on a single 512 GB Mac Studio.**
+One memory budget, two ways to spend it. These are REAP expert-pruned builds
+of Unsloth's [dynamic quants](https://huggingface.co/unsloth/Kimi-K3-GGUF) of
+Moonshot's [Kimi-K3](https://huggingface.co/moonshotai/Kimi-K3) (2.8T-param
+MoE, 896 experts per layer), cut to run **fully resident** on one 512 GB
+machine. Instead of only shrinking bits per weight, they drop the experts an
+**English + code** deployment rarely routes to. Both builds share the same
+calibration corpus and tooling, and differ only in how they spend the memory
+budget: more experts at fewer bits, or fewer experts at more bits.
 
-Unsloth's [UD-IQ1_S dynamic 1-bit quant](https://huggingface.co/unsloth/Kimi-K3-GGUF)
-(594 GB, all 896 experts), REAP-pruned to **640 experts / 441 GB** with an
-English + code calibration corpus. Driven end-to-end by Moonshot's own
+| build | experts kept | en+code saliency | avg expert bpw | size | verification |
+|---|---|---|---|---|---|
+| [`REAP640-IQ1_S/`](https://huggingface.co/hellohazime/Kimi-K3-REAP-512GB-GGUF/tree/main/REAP640-IQ1_S) | 640/896 | 93.5% | ~1.6 | 441.4 GB, 10 shards | SWE-Lancer 5/8, $3,500 earned |
+| [`REAP576-IQ2_XXS/`](https://huggingface.co/hellohazime/Kimi-K3-REAP-512GB-GGUF/tree/main/REAP576-IQ2_XXS) | 576/896 | 90.2% | ~1.9 | 478.5 GB, single file | SWE-Lancer **7/8, $13,000** earned — incl. 3 tasks none of our other setups had solved |
+
+Both run at ~3.0 tok/s decode / ~48 tok/s prefill on a Mac Studio M3 Ultra
+512 GB with full Metal offload. The 576 keep-set is a strict subset of the 640
+keep-set (same saliency ranking), so the pair isolates the experts-vs-bits
+trade cleanly.
+
+## Download one build, not the repo
+
+**A full-repo download fetches both builds (~920 GB). Pick one:**
+
+```bash
+# REAP640-IQ1_S (441 GB, 10 shards)
+hf download hellohazime/Kimi-K3-REAP-512GB-GGUF --include "REAP640-IQ1_S/*" --local-dir .
+
+# REAP576-IQ2_XXS (478 GB, single file)
+hf download hellohazime/Kimi-K3-REAP-512GB-GGUF --include "REAP576-IQ2_XXS/*" --local-dir .
+```
+
+`hf download` resumes interrupted transfers.
+
+## Which one
+
+**REAP640-IQ1_S** is the proven build: driven end-to-end by Moonshot's
 [Kimi Code CLI](https://github.com/MoonshotAI/kimi-code) on real SWE-Lancer
-tasks: **5/8 solved, $3,500 earned — including 2 tasks the 341 GB 2-bit
-K2.7-Code quant failed.**
+IC-SWE Diamond tasks — 3/3 on tasks the 341 GB 2-bit K2.7-Code baseline solved,
+plus 2/5 on tasks it failed ($3,500 total, grading untouched). Held-out
+perplexity: code 2.00 / en 7.44 / zh 7.93 / ja 19.46.
 
-| | |
-|---|---|
-| experts | 640 of 896 per MoE layer (uniform), REAP saliency ranking |
-| calibration | English web + code only — **93.53%** saliency mass retained |
-| quantization | untouched — surviving experts are byte-identical to UD-IQ1_S (slab copy along the expert axis, no requantization) |
-| router / norms | F32, inherited intact from the Unsloth quant |
-| size | 441.4 GB (fits 512 GB unified memory with KV + compute headroom) |
-| measured | Mac Studio M3 Ultra 512 GB: ~47 tok/s prefill, ~3.0 tok/s decode, full Metal offload |
+**REAP576-IQ2_XXS** starts from the higher-fidelity quant (Unsloth's published
+top-1 agreement with the unquantized model: 84.1% for UD-IQ2_XXS vs 78.9% for
+UD-IQ1_S, measured before pruning) and pays for it with 64 fewer experts per
+layer. Full 8-task result, one attempt per task, same protocol as REAP640:
 
+| task | K2.7-Q2 (341 GB) | REAP640 | REAP576 |
+|---|---|---|---|
+| 28096_836 | pass | pass | pass $500 |
+| 18827_741 | pass | pass | pass $1,000 |
+| 29618_781 | pass | pass | pass $500 |
+| 24508_791 | fail | pass $1,000 | pass $1,000 |
+| 27353_776 | fail | pass $500 | **fail** |
+| 14294 | fail | fail | **pass $4,000** |
+| 15815_1 | fail | fail | **pass $4,000** |
+| 15925 | fail | fail | **pass $2,000** |
 
-Full write-up — how it was built, what failed along the way, and the verification: [English](https://zenn.dev/hellohazime/articles/kimi_k3_reap640_512gb_mac#english-version) / [日本語](https://zenn.dev/hellohazime/articles/kimi_k3_reap640_512gb_mac).
+**7/8, $13,000** (REAP640: 5/8, $3,500). The three bottom-row tasks had not
+been solved by anything **we** had tested — not the 2-bit K2.7-Code baseline,
+not REAP640, and not the full-896-expert UD-IQ2_XXS streamed from SSD. Other
+people's pruned K3 builds exist and we have not run them on these tasks.
+Grading is stock SWE-Lancer, untouched. Two of the five differential tasks hit a harness config error on
+the first scheduling (the model was never invoked) and were re-run once; the
+27353_776 failure was a genuine attempt and was **not** re-rolled.
 
-This is a coding-agent build, not a general-purpose one: Chinese, Japanese and
-other languages were deliberately sacrificed by the calibration choice (the
-pruned experts are the ones those languages used).
+Caveats, honestly: every cell is a single attempt at temperature 1.0. One
+oddity deserves plain language. We could not fit the full 896-expert model
+into this machine's memory, so to check it we force-ran it anyway, streaming
+experts from SSD (llama.cpp's MoE-streaming patch, ~2/3 the decode speed) —
+and, oddly, it failed all three bottom-row tasks that this pruned subset of
+the very same weights then solved. That alone does not let us claim the
+pruned build is the stronger coder; with n=1 runs and a slower serving path
+in the mix, the honest reading is that the possibility is left faintly open,
+nothing more. Tool-call stability also wobbles: in 4 replays of a captured
+24-tool agentic request, 1 leaked XTML markers into the arguments (the full
+task runs completed regardless). Treat the pattern as strong but
+unreplicated.
 
-## Verified vs. not verified
-
-Honest scorecard: exactly what has been measured, and what has not.
-
-**Verified:**
-
-| claim | evidence |
-|---|---|
-| Loads and runs on one 512 GB M3 Ultra, full Metal offload | measured: 441.4 GB, ~220 s load |
-| Speed | measured: ~47 tok/s prefill, ~3.0 tok/s decode |
-| Drives Moonshot's Kimi Code CLI end-to-end (24 tools, ~24k-token system prompt) | 8 SWE-Lancer IC-SWE Diamond tasks run end-to-end: 3/3 on K2.7-solved tasks ($2,000/$2,000) plus 2/5 on K2.7-failed tasks ($1,500); grading untouched |
-| Not a strict subset of the 2-bit K2.7 baseline | **2/5 solved** on the five cheapest tasks that K2.7-Q2 failed |
-| Survives the exact agentic request that deterministically breaks the 4-bit MLX REAP builds | replayed byte-identical request → clean on-task tool call |
-| Pruning is lossless for surviving experts | identity-prune is byte-identical (pinned by tests); router/norms stay F32 |
-| en+code saliency retention | 93.53% of routed saliency mass at keep-640 |
-| Held-out perplexity (this build) | measured, 48×2048-token chunks: code **2.00** / en **7.44** / zh 7.93 / **ja 19.46** — the deliberate en+code trade, quantified |
-
-**Not verified:**
-
-| open question | status |
-|---|---|
-| Full 198-task SWE-Lancer performance | 8 tasks run so far; a full run takes weeks at 3 tok/s |
-| MMLU / standard benchmarks | not measured (held-out perplexity is measured, see above) |
-| Long-context quality beyond ~30k prompt tokens | context is set to 131k but only exercised to ~30k |
-| Chinese, Japanese generation quality | perplexity is measured (ja ≈2.6× en); generation/agentic quality in those languages is not |
-| Vision | **mmproj not included**; this prune touched text tensors only. Unsloth's mmproj may work but is untested here |
-| Sustained multi-day agent sessions | longest observed run: ~68 min/task |
-
-## Verification details
-
-Driven by [Kimi Code CLI](https://github.com/MoonshotAI/kimi-code) (Moonshot's
-own agent, 24 tools, ~24k-token system prompt) inside SWE-Lancer task
-containers, via `llama-server`:
-
-- **3/3 correct** on tasks the 2-bit K2.7 baseline also solved
-  (28096_836, 18827_741, 29618_781 — $2,000/$2,000), grading untouched.
-- **2/5 correct** on the five cheapest tasks that same K2.7 baseline *failed*
-  (24508_791 $1,000, 27353_776 $500) — so this build is not a strict subset of
-  K2.7's ability despite 1-bit experts and a 29% expert prune.
-- The same agentic request **deterministically degenerates** on the 4-bit MLX
-  REAP builds that keep only 242–326 experts (242@4bit → hard repetition
-  loops; 326 mixed → worse). Keeping more experts at ~1.6 bpw beats keeping
-  fewer at 4 bpw for agentic coherence.
-- The unpruned 594 GB quant answers the identical request correctly (verified
-  via disk-offload), so the prune's damage on this workload is not observable
-  at this task scale.
+Neither build speaks Chinese or Japanese — the calibration choice deliberately
+sacrifices them (the pruned experts are the ones those languages used). For
+Japanese, use the Japanese-calibrated sibling
+[Kimi-K3-REAP640ja-IQ1_S-GGUF](https://huggingface.co/hellohazime/Kimi-K3-REAP640ja-IQ1_S-GGUF)
+(ELYZA-tasks-100 4.16/5 vs REAP640's 1.81/5).
 
 ## Build & run
 
@@ -101,7 +113,8 @@ cd llama.cpp && git fetch origin pull/48/head:kimi-k3 && git checkout kimi-k3
 cmake -B build -DGGML_METAL=ON        # Apple Silicon; use -DGGML_CUDA=ON on NVIDIA
 cmake --build build --config Release -j --target llama-server
 
-./build/bin/llama-server -m Kimi-K3-REAP640-IQ1_S-00001-of-00010.gguf \
+# REAP640: point at the first shard; REAP576: point at the single file
+./build/bin/llama-server -m REAP640-IQ1_S/Kimi-K3-REAP640-IQ1_S-00001-of-00010.gguf \
     --port 8090 -ngl 99 -c 131072 --jinja --cache-reuse 0 \
     --temp 1.0 --top-p 0.95
 ```
@@ -109,7 +122,7 @@ cmake --build build --config Release -j --target llama-server
 - `--cache-reuse 0` is **required**: partial prefix-cache reuse corrupts the
   KDA recurrent state (known issue, see the PR discussion).
 - K3 is thinking-only; reasoning arrives in `reasoning_content`. Control depth
-  with `reasoning_effort` (`low` / `high` / `max`).
+  with `chat_template_kwargs: {"thinking_effort": "low" | "high" | "max"}`.
 - Sampling per Moonshot: `temperature 1.0, top_p 0.95` (agentic: `top_p 1.0`).
 
 Point any OpenAI-compatible agent at it. Kimi Code CLI config:
@@ -126,41 +139,43 @@ model = "k3"
 max_context_size = 131072
 ```
 
-## How it was made
+## How they were made
 
-Expert saliency and the keep-640 selection were produced with the calibration
-scripts from pipenetwork's [kimi-k3-mlx](https://github.com/PipeNetwork/kimi-k3-mlx)
-repo (`reap_calibrate.py` / `reap_plan.py` — REAP saliency
-`gate·‖expert output‖` streamed layer-by-layer over the 1.56 TB MXFP4 source,
-peak ~58 GB RAM), with the calibration mix swapped to English + code only. The
-only new code is [a small script](https://github.com/01554/kimi-k3-gguf-prune)
-that applies the plan to the GGUF: a byte-slab slice along the outermost expert
-axis (expert slabs are contiguous and quantization blocks never cross them),
-with the router rows and `exp_probs_b` renumbered to the keep order. An
-identity prune reproduces the input byte-for-byte (pinned by tests).
+Expert saliency and keep-list planning use pipenetwork's
+[kimi-k3-mlx](https://github.com/PipeNetwork/kimi-k3-mlx) scripts
+(`reap_calibrate.py` / `reap_plan.py` — REAP saliency `gate·‖expert output‖`
+streamed layer-by-layer over the 1.56 TB MXFP4 source), with the calibration
+mix swapped to English + code. The GGUF surgery is
+[a small script](https://github.com/01554/kimi-k3-gguf-prune): a byte-slab
+slice along the outermost expert axis (quantization blocks never cross expert
+boundaries ⇒ no requantization, zero added quant error), router rows and
+`exp_probs_b` renumbered to keep order. Identity-prune is byte-identical,
+pinned by tests. Surviving experts are byte-identical to the Unsloth quants
+they came from.
+
+Full write-up — how it was built, what failed along the way, verification:
+[English](https://zenn.dev/hellohazime/articles/kimi_k3_reap640_512gb_mac#english-version) /
+[日本語](https://zenn.dev/hellohazime/articles/kimi_k3_reap640_512gb_mac).
 
 Credits: [Moonshot AI](https://huggingface.co/moonshotai) (Kimi-K3, Kimi Code
-CLI), [Unsloth](https://huggingface.co/unsloth) (dynamic 1-bit quant whose
-protected router/norms this build inherits), [Cerebras
+CLI), [Unsloth](https://huggingface.co/unsloth) (dynamic quants whose protected
+router/norms these builds inherit), [Cerebras
 REAP](https://github.com/CerebrasResearch/reap) (saliency criterion),
 [kimi-k3-mlx](https://github.com/PipeNetwork/kimi-k3-mlx) (calibration
-machinery and the measured warnings this build steers by).
+machinery and the measured warnings these builds steer by).
 
 ## 日本語の説明
 
-Moonshot AI の 2.8 兆パラメータモデル
-[Kimi-K3](https://huggingface.co/moonshotai/Kimi-K3) を、Mac Studio(512 GB)
-1台で動くサイズにしたものです。
+Moonshot AIの2.8兆パラメータモデル Kimi-K3 を、Mac Studio(512GB)1台で動く
+サイズに枝刈りしたビルド集です。同じ512GBの予算を「expert多め×低bit」で使う
+REAP640-IQ1_S(441GB、SWE-Lancer 8タスク検証済み)と、「expert少なめ×高bit」で
+使うREAP576-IQ2_XXS(478GB、検証進行中)の2つが入っています。
 
-K3 の最小の GGUF(Unsloth の 1-bit 版)でも 594 GB あり、512 GB の Mac には
-載りません。このモデルは、英語とプログラミングにほぼ使われない専門家
-(expert)を 896 個中 256 個削って 441 GB にしたものです。残った expert の
-中身は Unsloth 版と 1 バイトも違いません(削っただけで、再圧縮していません)。
+リポジトリ丸ごとダウンロードすると両方(約920GB)落ちてくるので、上の
+`--include` 付きコマンドでどちらか片方だけ取得してください。
 
-英語のコーディングエージェント専用です。Moonshot 純正の Kimi Code CLI を
-繋いで SWE-Lancer の実タスク 8 本中 5 本を解きました($3,500)。うち 2 本は、
-2bit の K2.7-Code では解けなかった問題です。その代わり中国語・日本語などは
-意図的に犠牲にしています(削った expert がそれらを担っていたため)。
+英語+コード校正のため中国語・日本語は意図的に壊れています。日本語用途は
+[日本語校正版](https://huggingface.co/hellohazime/Kimi-K3-REAP640ja-IQ1_S-GGUF)へ。
 
-作った経緯と手法の詳細(日本語):
+経緯と実測の詳細:
 [Kimi K3を441GBに枝刈りして、Mac Studio 1台で動かした](https://zenn.dev/hellohazime/articles/kimi_k3_reap640_512gb_mac)
