@@ -59,3 +59,5 @@ complete, then rolled into 24-task totals.
   patch, ~2/3 decode speed): 0/3 — the oddity discussed on the model card.
 - 4-bit × 240-expert prune (F32 router): degenerated on the agentic prompt;
   not run to completion on these tasks.
+
+Replication kit: see [REPLICATION.md](REPLICATION.md) — one command re-runs any task set on your hardware.
