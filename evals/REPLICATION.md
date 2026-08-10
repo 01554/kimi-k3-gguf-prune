@@ -45,6 +45,25 @@ flags per build, the exact rollout caps we used (10800 s resident /
 Task sets: `probe` (3), `differential` (5), `trio` (the 3 tasks at the center
 of the streamed-arm mystery), `battle16` (16), `all24`.
 
+## About the rollout cap (read before judging failures)
+
+In our battle16 runs, **8 of 10 failures were cap-terminated** — the agent was
+still working when the 10800 s wall hit. So a `fail` row often means "did not
+finish in 3 h on a 3 tok/s machine", not "cannot solve".
+
+Our own follow-up protocol, which you're welcome to copy: re-run **only
+cap-terminated failures** (never natural exits or passes — those results stay
+valid) at double the cap, and report those as separate results labeled with
+the cap, e.g. `reap576_iq2xxs_21600s`. To do that with this kit:
+
+```bash
+ROLLOUT_CAP=21600 scripts/replicate_k3_reap.sh reap576 battle16
+# delete only the cap-terminated .csv files from replication_results/ first,
+# so the resume feature re-runs exactly those
+```
+
+Never mix caps inside one reported column — the cap goes in the label.
+
 ## Ground rules for comparable numbers
 
 - One attempt per task; don't re-roll failures. The script's resume feature
