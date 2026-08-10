@@ -43,7 +43,48 @@ flags per build, the exact rollout caps we used (10800 s resident /
 `replication_results/`.
 
 Task sets: `probe` (3), `differential` (5), `trio` (the 3 tasks at the center
-of the streamed-arm mystery), `battle16` (16), `all24`.
+of the streamed-arm mystery), `battle16` (16), `all24` — **or any explicit
+SWE-Lancer IC-SWE Diamond task IDs**:
+
+```bash
+scripts/replicate_k3_reap.sh full896-stream 14294 15925
+```
+
+That makes divide-and-conquer easy: if a few people each take a slice of
+[`results.csv`](results.csv) (or tasks we never ran — all 198 IC-SWE Diamond
+IDs work), the table fills itself. Say which IDs you're taking in the thread
+so work doesn't double up.
+
+### Sample session — the cell we most want checked
+
+Task **14294** ($4,000) is where our strangest result lives: the pruned
+478 GB build solved it, the full 711 GB model it was carved from did not
+(streamed from SSD; single attempts). It is also the smallest-input task in
+our whole selection, so it's the fastest one to replicate.
+
+```
+# the pruned build — we measured PASS:
+$ LLAMA_SERVER=~/llama.cpp/build/bin/llama-server \
+  MODEL=models/REAP576-IQ2_XXS/Kimi-K3-REAP576-IQ2_XXS.gguf \
+  scripts/replicate_k3_reap.sh reap576 14294
+...
+14294,0,True,0,0,0,4000.0
+
+# the full model it was cut from — we measured FAIL:
+$ LLAMA_SERVER=~/llama.cpp/build/bin/llama-server \
+  MODEL=models/UD-IQ2_XXS/Kimi-K3-UD-IQ2_XXS-00001-of-00016.gguf \
+  scripts/replicate_k3_reap.sh full896-stream 14294
+...
+14294,0,False,0,0,0,0.0
+```
+
+If you have the VRAM to run the full model **without** streaming, that single
+data point would be worth more than everything else on this page.
+
+Reading the CSV line: `question_id, attempt_id, correct, input_tokens,
+output_tokens, reasoning_tokens, earned`. `correct=True` + `earned` means the
+stock SWE-Lancer grader paid out. The three token columns are always 0 (the
+solver doesn't report usage) — ignore them.
 
 ## About the rollout cap (read before judging failures)
 
