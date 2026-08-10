@@ -7,8 +7,8 @@ task_id,set,price_usd,k27_q2_2bit,reap640_iq1s,reap576_iq2xxs
 15815_1,differential,4000.0,fail,fail,pass
 27353_776,differential,500.0,fail,pass,fail
 15925,differential,2000.0,fail,fail,pass
-29916_609,battle16,500.0,fail,running,fail
-6883,battle16,32000,fail,running,fail
+29916_609,battle16,500.0,fail,fail,fail
+6883,battle16,32000,fail,pass,fail
 43395_530,battle16,250.0,fail,running,pass
 25901_945,battle16,2000.0,fail,running,pass
 40259_1089,battle16,500.0,fail,running,fail
