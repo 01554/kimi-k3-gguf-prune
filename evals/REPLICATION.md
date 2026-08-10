@@ -28,7 +28,7 @@ hf download hellohazime/Kimi-K3-REAP-512GB-GGUF --include "REAP576-IQ2_XXS/*" --
 # or: hf download unsloth/Kimi-K3-GGUF --include "UD-IQ2_XXS/*" --local-dir models
 
 # 3. harness (then follow its README once: uv sync + build the task image)
-git clone https://github.com/01554/frontier-evals
+git clone -b k3-replication https://github.com/01554/frontier-evals
 cd frontier-evals/project/swelancer
 
 # 4. run
