@@ -85,17 +85,20 @@ the first scheduling (the model was never invoked) and were re-run once; the
 27353_776 failure was a genuine attempt and was **not** re-rolled.
 
 Caveats, honestly: every cell is a single attempt at temperature 1.0. One
-oddity deserves plain language. We could not fit the full 896-expert model
-into this machine's memory, so to check it we force-ran it anyway, streaming
-experts from SSD (llama.cpp's MoE-streaming patch, ~2/3 the decode speed) —
-and, oddly, it failed all three bottom-row tasks that this pruned subset of
-the very same weights then solved. That alone does not let us claim the
-pruned build is the stronger coder; with n=1 runs and a slower serving path
-in the mix, the honest reading is that the possibility is left faintly open,
-nothing more. Tool-call stability also wobbles: in 4 replays of a captured
-24-tool agentic request, 1 leaked XTML markers into the arguments (the full
-task runs completed regardless). Treat the pattern as strong but
-unreplicated.
+oddity got a follow-up. We could not fit the full 896-expert model into this
+machine's memory, so to check it we force-ran it anyway, streaming experts
+from SSD (llama.cpp's MoE-streaming patch, ~2/3 the decode speed) — and,
+oddly, it failed all three bottom-row tasks that this pruned subset of the
+very same weights then solved. We then re-ran those three on the full
+streamed model as an explicitly-labeled second attempt: **it solved all
+three.** The 0/3 did not replicate. Read it as run-to-run variance of
+single-attempt agentic runs, not as pruning adding capability — both
+attempts are recorded separately in
+[`evals/results.csv`](https://github.com/01554/kimi-k3-gguf-prune/blob/main/evals/results.csv).
+The practical lesson stands: single-run rows in any such table (ours
+included) carry real variance. Tool-call stability also wobbles: in 4
+replays of a captured 24-tool agentic request, 1 leaked XTML markers into
+the arguments (the full task runs completed regardless).
 
 Neither build speaks Chinese or Japanese — the calibration choice deliberately
 sacrifices them (the pruned experts are the ones those languages used). For

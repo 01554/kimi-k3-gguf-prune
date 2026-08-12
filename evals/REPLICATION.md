@@ -78,8 +78,12 @@ $ LLAMA_SERVER=~/llama.cpp/build/bin/llama-server \
 14294,0,False,0,0,0,0.0
 ```
 
-If you have the VRAM to run the full model **without** streaming, that single
-data point would be worth more than everything else on this page.
+Update: our own labeled second attempt on the full streamed model **passed**
+14294 (and the other two trio tasks) — the first-run 0/3 did not replicate.
+That is exactly why this kit exists: single agentic runs at temperature 1.0
+carry real variance, and no cell in the table should be trusted until someone
+else reproduces it. Full-VRAM (non-streamed) runs of any task remain the most
+valuable contribution.
 
 Reading the CSV line: `question_id, attempt_id, correct, input_tokens,
 output_tokens, reasoning_tokens, earned`. `correct=True` + `earned` means the
