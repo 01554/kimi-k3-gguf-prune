@@ -61,3 +61,12 @@ complete, then rolled into 24-task totals.
   not run to completion on these tasks.
 
 Replication kit: see [REPLICATION.md](REPLICATION.md) — one command re-runs any task set on your hardware.
+
+**qwen38_a95b_udiq1s_10800s** — a different *model* on the same tasks:
+unpruned Qwen3.8-2.4T-A95B (unsloth UD-IQ1_S, 508 GB) served via llama.cpp
+MoE streaming (cache 400 GiB, ~5-6 tok/s decode), driven by **Qwen Code CLI
+0.21.10–0.21.11** (the maker's-own-agent principle: each model gets its
+vendor's official CLI, as Kimi models get Kimi Code CLI). Same 10800 s cap,
+one attempt per task. 4 of 8 tasks measured so far; `pending` cells are
+deferred, not failures. Note: one earlier batch was discarded due to a solver
+env bug (stream idle timeout) before these runs.
