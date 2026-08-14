@@ -77,9 +77,19 @@ def main():
     energy, n_ff = load_width_energy(args.imatrix, args.block)
     n_expert = hot.shape[1]
     n_blocks = n_ff // args.block
+    # Stored-but-unused layers (e.g. an MTP/nextn block, like Qwen3.8's
+    # blk.92) never run, so they have zero hotness and no imatrix entry —
+    # but they must still be sliced to the uniform shape or the file won't
+    # load. A hot layer missing from the imatrix is a real error.
     missing = sorted(set(layers) - set(energy))
+    hot_missing = [l for l in missing if hot[layers.index(l)].sum() > 0]
+    if hot_missing:
+        raise SystemExit(f"imatrix missing HOT MoE layers: {hot_missing}")
     if missing:
-        raise SystemExit(f"imatrix missing MoE layers: {missing}")
+        print(f"unused (zero-hotness) layers sliced blind: {missing}")
+        n_ff_im = n_ff
+        for l in missing:
+            energy[l] = np.zeros((n_expert, n_ff_im // args.block))
 
     plan = {"num_experts": n_expert, "n_ff_exp": n_ff, "block": args.block,
             "layers": {}}
@@ -88,7 +98,8 @@ def main():
     for i, l in enumerate(layers):
         row = hot[i]
         keep = np.sort(np.argsort(row)[::-1][: args.keep])
-        exp_cov.append(row[keep].sum() / row.sum())
+        if row.sum() > 0:
+            exp_cov.append(row[keep].sum() / row.sum())
         en = energy[l]
         assert en.shape == (n_expert, n_blocks), (l, en.shape)
         wblocks = {}
