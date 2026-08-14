@@ -40,7 +40,7 @@ requantization anywhere).
 | selection coverage | 89.6% of routing selections retained (worst layer 83.2%); kept width blocks carry 79.0% of activation energy (mean per expert) |
 | quantization | untouched — byte-slab copy of UD-IQ1_S, no requantization |
 | size | 246 GB = 229 GiB |
-| KLD vs unpruned UD-IQ1_S | en KLD_EN / code KLD_CODE (held-out text; argmax agreement AGREE_EN% / AGREE_CODE%) |
+| KLD vs unpruned UD-IQ1_S | held-out en: mean 0.239, median 0.097, argmax agreement 79.2%, PPL 9.05 → 10.90 (×1.20) · held-out code: mean 0.288, median 0.020, argmax agreement 86.6%, PPL 1.89 → 2.38 (×1.26) |
 
 Expert selection is **count-based** (how often the router picked each
 expert), not gate-weighted REAP saliency: on Kimi-K3 the same shortcut
@@ -50,6 +50,12 @@ Disclosed here because it is a methodological difference from our
 Width selection uses llama-imatrix's per-expert stats on the
 `ffn_down_exps` input — the squared activations of each intermediate
 channel — summed per 256-channel superblock.
+
+Reading the KLD row: on code — the target domain — most tokens are barely
+touched (median KLD 0.020) and the top-1 prediction survives 86.6% of the
+time; the damage concentrates in a heavy tail (99th percentile KLD 3.8). On
+general English the spread is wider (median 0.097, argmax 79.2%). Judge the
+build by the agentic benchmark once it lands, not by PPL alone.
 
 Like every calibration-pruned build: **what the corpus leaves out is what
 gets deleted.** Non-English languages and off-domain abilities are
