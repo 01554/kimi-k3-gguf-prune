@@ -11,7 +11,7 @@ task_id,set,price_usd,k27_q2_2bit,reap640_iq1s,reap576_iq2xxs,streamed896_iq2xxs
 6883,battle16,32000,fail,pass,fail,pass,,,fail,pass
 43395_530,battle16,250.0,fail,running,pass,pass,,,fail,fail
 25901_945,battle16,2000.0,fail,running,pass,not_run,,,fail,fail
-40259_1089,battle16,500.0,fail,running,fail,not_run,,,fail,not_run
+40259_1089,battle16,500.0,fail,running,fail,not_run,,,fail,running
 18746_833,battle16,1000.0,fail,running,fail,not_run,,,fail,not_run
 4324,battle16,2000.0,fail,running,pass,not_run,,,fail,not_run
 44429_1100,battle16,250.0,fail,running,fail,not_run,,,fail,not_run
