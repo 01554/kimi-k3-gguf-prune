@@ -70,6 +70,7 @@ deliberately sacrificed. Do not use this for multilingual work.
 | KLD / argmax agreement vs the unpruned quant | measured on held-out en and code text (table above) |
 | Slicing is lossless for surviving weights | identity prune byte-identical; subset equals the naive numpy slice — pinned by tests in the [tooling repo](https://github.com/01554/kimi-k3-gguf-prune) |
 | Loads and generates | yes — on **stock mainline llama.cpp** (no fork needed; verified on `4c1a0af`) and on our fork; greedy outputs identical across both, 9.6–10.0 tok/s decode resident on an M3 Ultra |
+| Drives an agent CLI | one-shot smoke with Qwen Code 0.21.11 against `llama-server --jinja`: wrote a file via tool calls, ran it, reported correct output. A smoke test, not a benchmark |
 
 **Not verified (yet):**
 
