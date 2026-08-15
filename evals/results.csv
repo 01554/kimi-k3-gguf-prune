@@ -4,7 +4,7 @@ task_id,set,price_usd,k27_q2_2bit,reap640_iq1s,reap576_iq2xxs,streamed896_iq2xxs
 29618_781,probe,500.0,pass,pass,pass,pass,,pass,pass,pass,pass
 14294,differential,4000.0,fail,fail,pass,fail,pass,pass,pass,pass,fail
 24508_791,differential,1000.0,fail,pass,pass,pass,,pass,pass,pass,fail
-15815_1,differential,4000.0,fail,fail,pass,fail,pass,pending,fail,pass,fail
+15815_1,differential,4000.0,fail,fail,pass,fail,pass,pass,fail,pass,fail
 27353_776,differential,500.0,fail,pass,fail,pass,,pass,fail,fail,fail
 15925,differential,2000.0,fail,fail,pass,fail,pass,pending,pass,fail,fail
 29916_609,battle16,500.0,fail,fail,fail,fail,,,fail,pass,
