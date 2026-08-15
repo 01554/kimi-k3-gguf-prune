@@ -116,7 +116,7 @@ real paid freelance jobs from the SWE-Lancer benchmark, in two groups:
 - **5 hard tasks** (selected precisely because that baseline failed them,
   prizes $500–$4,000): **all 5 failed.** Every failure was the model
   finishing with a wrong answer well under the 3-hour limit — not running
-  out of time. The unpruned parent solves most of these.
+  out of time. The unpruned parent solves all five.
 
 That is the KLD tail above, made concrete: routine agentic work survives
 the prune; the hardest tasks do not. If you have the RAM for the unpruned
