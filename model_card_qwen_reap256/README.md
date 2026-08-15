@@ -51,11 +51,44 @@ Width selection uses llama-imatrix's per-expert stats on the
 `ffn_down_exps` input — the squared activations of each intermediate
 channel — summed per 256-channel superblock.
 
-Reading the KLD row: on code — the target domain — most tokens are barely
-touched (median KLD 0.020) and the top-1 prediction survives 86.6% of the
-time; the damage concentrates in a heavy tail (99th percentile KLD 3.8). On
-general English the spread is wider (median 0.097, argmax 79.2%). Judge the
-build by the agentic benchmark once it lands, not by PPL alone.
+## Reading the quality numbers
+
+**How they were measured.** ~128k tokens each of held-out English (FineWeb,
+skipped far past anything the calibration corpus touched) and held-out code
+(codeparrot validation) were teacher-forced through the **unpruned**
+UD-IQ1_S, saving its full next-token distributions; the pruned model then
+ran the identical text and `llama-perplexity --kl-divergence` compared the
+two, token by token. So every number below answers one question: *how far
+does this build drift from the exact model it was cut from?* (Not from
+FP16 — quantization loss is inherited from the parent and identical by
+construction.)
+
+**KL divergence — mean vs median.** KLD is the per-token distance between
+the two probability distributions; 0 = identical. The shape matters more
+than the average: on code the **median is 0.020** — half of all tokens are
+essentially untouched — while the **mean of 0.288** is dragged up by a
+small heavy tail (99th percentile: 3.8) where the pruned model disagrees
+badly. Pruning damage is *concentrated*, not spread evenly. English shows
+the same shape but wider (median 0.097): the en+code calibration protects
+code harder than prose, by design.
+
+**Argmax agreement.** The fraction of tokens where the pruned model's #1
+choice equals the parent's — i.e., how often greedy decoding would pick the
+same token. **86.6% on code / 79.2% on English.** For scale: a published
+K3 width-50 prune reported 73.7% against its parent; higher is better, and
+100% would mean the prune changed nothing that greedy decoding can see.
+
+**Perplexity ratio.** ×1.26 on code (1.89 → 2.38), ×1.20 on English.
+Treat this as a sanity check, not a verdict — PPL averages away exactly
+the tail structure that KLD exposes, and the tail is where agentic
+failures live.
+
+**Did the tail matter? Yes.** The benchmark below is the tail made
+visible: routine tasks (head of the distribution) all pass; the five
+hardest tasks (which live in the tail) all fail. If your workload is
+routine coding assistance, these numbers say the prune barely touches
+you; if it leans on rare, hard reasoning, they say run the unpruned
+model.
 
 Like every calibration-pruned build: **what the corpus leaves out is what
 gets deleted.** Non-English languages and off-domain abilities are
@@ -162,7 +195,10 @@ Qwen3.8(2.4兆パラメータMoE)を、英語+コードの用途でほぼ使わ�
 二段階で削った版です。(1) 各層512個のexpertのうち実測ルーティングで選ばれ
 ない208個を削除、(2) 残ったexpertの中間層幅2048chのうち活性エネルギーの低い
 512ch(256chブロック2個)を削除。量子化はいじらず全てバイトコピーなので、残っ
-た重みは元のUD-IQ1_Sと完全一致です。246GB(229GiB)になり、256GiB機に全載せ
+た重みは元のUD-IQ1_Sと完全一致です。品質数値の読み方: KLDは「切り出し元
+とどれだけ分布がズレたか」(0=同一)。codeは中央値0.020=トークンの半分は
+ほぼ無傷で、被害は上位1%のテールに集中(99%点3.8)。argmax一致86.6%は
+「greedyなら87%のトークンで親と同じ字を打つ」の意。詳細は英語節参照。246GB(229GiB)になり、256GiB機に全載せ
 できます(Metalのwired上限引き上げ推奨、詳細は上のRunセクション)。512GiB機
 なら削っていない元をSSDストリーミングで動かす方が良い(実測5.3〜6.3 tok/s)。
 日本語を含む多言語は設計上壊れています。
