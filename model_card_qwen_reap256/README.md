@@ -74,14 +74,22 @@ deliberately sacrificed. Do not use this for multilingual work.
 
 **Measured — SWE-Lancer (8 tasks, one attempt each, 10800 s cap, Qwen Code CLI 0.21.11):**
 
-**3/8, $2,000** — probe 3/3, differential 0/5. Every fail was a natural
-exit well under the cap. The probe sweep includes 28096_836, which the
-unpruned parent fumbled on a tool-format stumble; on the five hard
-(K2.7-failed) tasks the parent is strictly better — consistent with the
-KLD tail above. Per-task cells, conditions and all other arms:
+**3 of 8 tasks solved ($2,000 of the $13,500 at stake).** The 8 tasks are
+real paid freelance jobs from the SWE-Lancer benchmark, in two groups:
+
+- **3 easy sanity checks** (tasks a 2-bit Kimi-K2.7 baseline could solve):
+  **all 3 passed** — including one the unpruned parent model failed on a
+  tool-calling format stumble.
+- **5 hard tasks** (selected precisely because that baseline failed them,
+  prizes $500–$4,000): **all 5 failed.** Every failure was the model
+  finishing with a wrong answer well under the 3-hour limit — not running
+  out of time. The unpruned parent solves most of these.
+
+That is the KLD tail above, made concrete: routine agentic work survives
+the prune; the hardest tasks do not. If you have the RAM for the unpruned
+model, run that. Per-task results, exact conditions and every other build
+we compare against:
 [swelancer-local-subset-evals](https://github.com/01554/swelancer-local-subset-evals).
-Read this as: routine agentic work survives the prune; the hard-task tail
-does not. If you have the RAM for the unpruned model, run that.
 
 **Not verified (yet):**
 
