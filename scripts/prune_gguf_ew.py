@@ -38,7 +38,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from prune_gguf import (  # noqa: E402
-    BIAS_RE, EXPERT_RE, ROUTER_RE, _byte_shape, _copy_kv, _shards,
+    BIAS_RE, ROUTER_RE, _byte_shape, _copy_kv, _shards,
 )
 from gguf import GGUFReader, GGUFWriter  # noqa: E402
 
@@ -113,7 +113,7 @@ def cmd_prune(args):
                 # after cuts: [n_keep, n_ff_new, row_bytes]
                 shape = [n_keep, n_ff_new, shape[2]]
 
-                def mat(t=t, keep=keep, wb=wb, slab=slab, blk_bytes=blk_bytes):
+                def mat(t=t, keep=keep, wb=wb, blk_bytes=blk_bytes):
                     d = np.asarray(t.data).reshape(-1).view(np.uint8)
                     d = d.reshape(n_expert, n_blocks, blk_bytes)[keep]
                     return np.ascontiguousarray(
