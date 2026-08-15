@@ -10,7 +10,7 @@ Task **content is not mirrored here** — the tasks belong to OpenAI's
 split) and can be looked up by `question_id` in the official release. We
 publish IDs, prices, selection rules and outcomes only.
 
-## Common conditions (all experiments)
+## Common conditions (the K3-era experiments; the K2.7 baseline ran pre-CLI with our tool-aware solver at context 262,144)
 
 - Agent: Moonshot's [Kimi Code CLI](https://github.com/MoonshotAI/kimi-code)
   inside the stock SWE-Lancer task container, pointed at a local
