@@ -70,3 +70,12 @@ vendor's official CLI, as Kimi models get Kimi Code CLI). Same 10800 s cap,
 one attempt per task. 4 of 8 tasks measured so far; `pending` cells are
 deferred, not failures. Note: one earlier batch was discarded due to a solver
 env bug (stream idle timeout) before these runs.
+
+**qwen38_reap256_iq1s_10800s** — our expert+width-pruned build of the model
+above: [Qwen3.8-2.4T-A95B-REAP-256GB-GGUF](https://huggingface.co/hellohazime/Qwen3.8-2.4T-A95B-REAP-256GB-GGUF)
+(keep-304 of 512 experts × 6/8 width superblocks, 246 GB), served fully
+resident (`-ngl 99 -c 131072 --jinja`, temp 1.0 / top-p 0.95 / top-k 20,
+~10 tok/s decode), same Qwen Code CLI (pinned 0.21.11), same 10800 s cap, one
+attempt per task. **Run in progress** — an empty cell means not yet run.
+All fails so far ended well under the cap (natural fails, not
+cap-terminated).
