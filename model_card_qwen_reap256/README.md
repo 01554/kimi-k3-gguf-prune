@@ -72,11 +72,21 @@ deliberately sacrificed. Do not use this for multilingual work.
 | Loads and generates | yes — on **stock mainline llama.cpp** (no fork needed; verified on `4c1a0af`) and on our fork; greedy outputs identical across both, 9.6–10.0 tok/s decode resident on an M3 Ultra |
 | Drives an agent CLI | one-shot smoke with Qwen Code 0.21.11 against `llama-server --jinja`: wrote a file via tool calls, ran it, reported correct output. A smoke test, not a benchmark |
 
+**Measured — SWE-Lancer (8 tasks, one attempt each, 10800 s cap, Qwen Code CLI 0.21.11):**
+
+**3/8, $2,000** — probe 3/3, differential 0/5. Every fail was a natural
+exit well under the cap. The probe sweep includes 28096_836, which the
+unpruned parent fumbled on a tool-format stumble; on the five hard
+(K2.7-failed) tasks the parent is strictly better — consistent with the
+KLD tail above. Per-task cells, conditions and all other arms:
+[swelancer-local-subset-evals](https://github.com/01554/swelancer-local-subset-evals).
+Read this as: routine agentic work survives the prune; the hard-task tail
+does not. If you have the RAM for the unpruned model, run that.
+
 **Not verified (yet):**
 
 | open question | status |
 |---|---|
-| SWE-Lancer agentic performance | planned: same 8-task set our K3 builds ran; unpruned Qwen3.8 passed 3 of the 4 tasks measured so far (the run was paused for this build) |
 | Long context, multilingual (broken by design), anything off-corpus | not measured / not intended |
 
 ## Run
