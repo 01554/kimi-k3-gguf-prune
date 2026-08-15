@@ -60,7 +60,7 @@ every metric — en argmax 87.6% vs 79.2%, code 90.0% vs 86.6%, PPL overhead
 | KLD / argmax agreement vs the unpruned quant | table above, held-out en and code |
 | Slicing is lossless for surviving weights | identity prune byte-identical — pinned by tests in the [tooling repo](https://github.com/01554/kimi-k3-gguf-prune) |
 | Loads and generates | **stock mainline llama.cpp** (9.3 tok/s) and our fork (9.5 tok/s), greedy outputs identical, full `-ngl 99` resident on an M3 Ultra 512 GB |
-| Agentic sanity check | SANITY3_RESULT |
+| Agentic sanity check | two labeled conditions, per our protocol: bare prompt 1/3 (two one-turn deaths on the benchmark's phantom ```python scaffold instruction — verified from logs, same trap class as the parent's single bench fail); with the standard counter-note (`promptv1m`) 2/2 so far, third task running — the trapped cells become normal grind-passes. Details: [swelancer-local-subset-evals](https://github.com/01554/swelancer-local-subset-evals) |
 
 **Not verified:** long context, multilingual (broken by design), anything
 off-corpus. Per our current protocol, new builds get a KLD oracle plus a
