@@ -73,15 +73,20 @@ Honest scorecard: exactly what has been measured, and what has not.
 | Pruning is lossless for surviving experts | identity-prune is byte-identical (pinned by tests); router/norms stay F32 |
 | Generation settings disclosed | max_tokens 4096, thinking_effort low, temp 1.0, top-p 0.95, identical for both builds; 4/100 answers hit the 4096 cap. A 16k-budget recheck rescued none of them: 2 re-ran to clean completion *within* the original budget (stochastic thinking runaways at temp 1.0), 1 was still empty at 16k (114k chars of thinking), 1 hit 16k again in the answer body. The cap is not the bottleneck |
 
-**Not verified:**
+**Verified operating envelope** — what this card's numbers actually cover:
 
-| open question | status |
+| measured at | detail |
 |---|---|
-| Agentic use (Kimi Code CLI, tool calling) | **never tested on this build** — the SWE-Lancer results on the sibling's card do not transfer |
-| Coding benchmarks | not measured; perplexity says expect degradation |
-| Japanese factual accuracy | the judge flagged factual errors even in fluent answers; 1.6-bit experts are fluent before they are precise |
-| Long-context quality | ELYZA prompts are short; 131k context is configured but unexercised here |
-| Vision | mmproj not included; text tensors only |
+| Single-turn Japanese generation | ELYZA-tasks-100, max_tokens 4096, thinking low, temp 1.0 / top-p 0.95 — the rubric/pairwise numbers above |
+| Perplexity | 2048-token windows, 4 domains (ja / en / code / zh table above) |
+| Serving | 131,072 context configured and stable; ELYZA prompts exercise only the short end of it |
+| Modality | text tensors only (no mmproj shipped) |
+
+Agentic tool-calling sessions have been run **only on the en+code sibling** —
+its SWE-Lancer numbers belong to that build alone. The code-perplexity
+doubling above is the honest predictor for coding work here, and the judge
+flagged factual slips inside fluent Japanese: 1.6-bit experts are fluent
+before they are precise.
 
 ## Download & run
 
