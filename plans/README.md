@@ -45,9 +45,21 @@ language↔code divide (66% retention) — consistent with our depth-resolved
 expert-overlap analysis. This is why the calibration mix is disclosed on
 every card: **the corpus is part of the model.**
 
-Qwen builds: counts were archived only in aggregate, so a retroactive
-split is not possible; a two-halves recalibration run is queued and will be
-added here when measured.
+**Qwen builds (keep-304, split-half recalibration, 2026-08-16):** the
+calibration stream was split into halves and the routing counts re-collected
+per half (two resident imatrix passes). This is a same-distribution split —
+the directly comparable kind to pipenetwork's reported 98.4%:
+
+| metric | result |
+|---|---:|
+| keep-304 overlap, half A ∩ half B | 92.7% |
+| each half ∩ the shipped selection | 96.0% / 96.4% |
+| count-mass retention (A-on-B / B-on-A) | 98.7% / 98.9% (worst layer 97.0%) |
+
+Reading the two studies together: expert selection is **highly robust to
+sampling** (Qwen same-distribution halves ≈ 99% retention) and **visibly
+sensitive to domain mix** (K3 domain halves: 66–90%). Which is exactly the
+claim on every card: the corpus is part of the model.
 
 Reproduce the tables: `scripts/splithalf_report.py` (reads the npz archives
 in `out/`, which are not committed for size; archived locally and available

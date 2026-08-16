@@ -53,7 +53,7 @@ Width selection uses llama-imatrix's per-expert stats on the
 channel — summed per 256-channel superblock.
 
 
-**Provenance**: the exact pruning plan is published — [`plans/plan_ew_qwen_304x6.json`](https://github.com/01554/kimi-k3-gguf-prune/tree/main/plans) (sha256 `22aea5cfbc36dae5…`, full hash in SHA256SUMS); plan + source quant + the MIT slicer reproduce this file's bytes. A split-half robustness run for the Qwen counts is queued (the shipped counts archive is aggregate-only).
+**Provenance**: the exact pruning plan is published — [`plans/plan_ew_qwen_304x6.json`](https://github.com/01554/kimi-k3-gguf-prune/tree/main/plans) (sha256 `22aea5cfbc36dae5…`, full hash in SHA256SUMS); plan + source quant + the MIT slicer reproduce this file's bytes. Split-half recalibration (same-distribution halves): keep-set overlap 92.7%, count-mass retention 98.7–98.9% (worst layer 97.0%) — details in plans/README.md.
 
 ## Reading the quality numbers
 
