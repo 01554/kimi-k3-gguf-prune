@@ -79,8 +79,13 @@ finishes. Per current protocol new builds get this gate plus the KLD oracle
 instead of a full benchmark run; per-task cells live in
 [swelancer-local-subset-evals](https://github.com/01554/swelancer-local-subset-evals).
 
-**Not verified:** long context, multilingual (broken by design), anything
-off-corpus.
+**Verified operating envelope** — every number on this card was measured at
+a stated point: quality (KLD / argmax / PPL) on **2048-token** teacher-forced
+windows — the same regime the expert selection was calibrated in; agentic
+work served at **context 131,072** through multi-hour sessions (up to
+185 min). The model's trained window is **262,144** (GGUF metadata).
+Beyond these points — longer contexts, non-English work (deliberately cut
+by calibration), off-corpus domains — you are past our measurements.
 
 ## Run
 

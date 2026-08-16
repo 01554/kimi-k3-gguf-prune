@@ -128,11 +128,13 @@ model, run that. Per-task results, exact conditions and every other build
 we compare against:
 [swelancer-local-subset-evals](https://github.com/01554/swelancer-local-subset-evals).
 
-**Not verified (yet):**
-
-| open question | status |
-|---|---|
-| Long context, multilingual (broken by design), anything off-corpus | not measured / not intended |
+**Verified operating envelope** — each number above was measured at a
+stated point: quality on **2048-token** teacher-forced windows (the same
+regime the calibration ran in); all 8 agentic tasks served at **context
+131,072**, sessions up to 163 min, including one task whose issue text
+alone is ~104k tokens. The parent model's trained window is **262,144**.
+Beyond these points — longer contexts, non-English work (deliberately cut
+by calibration), off-corpus domains — you are past our measurements.
 
 ## Run
 
