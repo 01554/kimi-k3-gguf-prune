@@ -80,7 +80,7 @@ not REAP640, and not the full-896-expert UD-IQ2_XXS streamed from SSD. Other
 people's pruned K3 builds exist and we have not run them on these tasks.
 Grading is stock SWE-Lancer, untouched. Exact task IDs, selection rules and
 per-task results for every experiment:
-[`evals/` in the GitHub repo](https://github.com/01554/kimi-k3-gguf-prune/tree/main/evals). Two of the five differential tasks hit a harness config error on
+[the eval repo](https://github.com/01554/swelancer-local-subset-evals). Two of the five differential tasks hit a harness config error on
 the first scheduling (the model was never invoked) and were re-run once; the
 27353_776 failure was a genuine attempt and was **not** re-rolled.
 
@@ -94,7 +94,7 @@ streamed model as an explicitly-labeled second attempt: **it solved all
 three.** The 0/3 did not replicate. Read it as run-to-run variance of
 single-attempt agentic runs, not as pruning adding capability — both
 attempts are recorded separately in
-[`evals/results.csv`](https://github.com/01554/kimi-k3-gguf-prune/blob/main/evals/results.csv).
+[the eval repo's per-task results](https://github.com/01554/swelancer-local-subset-evals) (old results.csv URL remains as a synced mirror).
 The practical lesson stands: single-run rows in any such table (ours
 included) carry real variance. Tool-call stability also wobbles: in 4
 replays of a captured 24-tool agentic request, 1 leaked XTML markers into

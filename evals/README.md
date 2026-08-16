@@ -1,3 +1,11 @@
+> **Moved (2026-08-16):** this eval kit now lives at
+> [**01554/swelancer-local-subset-evals**](https://github.com/01554/swelancer-local-subset-evals)
+> — new task-set names (sanity3 / hard5 / extended16), per-environment
+> results, run-condition metadata, and per-model commentary. Nothing here
+> was deleted: this directory is frozen as the historical record and
+> [`results.csv`](results.csv) stays as a synced mirror because its URL is
+> linked elsewhere. New columns land in the new repo first.
+
 # SWE-Lancer task selection and per-task results
 
 Exact task lists behind every number published on the
