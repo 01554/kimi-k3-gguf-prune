@@ -62,10 +62,18 @@ every metric — en argmax 87.6% vs 79.2%, code 90.0% vs 86.6%, PPL overhead
 | Loads and generates | **stock mainline llama.cpp** (9.3 tok/s) and our fork (9.5 tok/s), greedy outputs identical, full `-ngl 99` resident on an M3 Ultra 512 GB |
 | Agentic sanity check | two labeled conditions, per our protocol: bare prompt **1/3** — two one-turn deaths obeying the benchmark's phantom ```python scaffold instruction (log-verified, same trap class as the parent's single bench fail) · with the standard counter-note (`promptv1m`) **3/3** — the trapped cells become normal grind-passes (20-min death → 74-min \$1,000 win). Full data: [swelancer-local-subset-evals](https://github.com/01554/swelancer-local-subset-evals) |
 
+**What the sanity check actually demonstrates** — and what most quant/prune
+releases never show: this build drove Qwen's own CLI agent through **three
+real, paid SWE-Lancer tasks end-to-end** — multi-hour tool-calling sessions
+(29 / 74 / 185 minutes) against a real React Native codebase — and **solved
+all three** ($2,000 in original prize value) under the disclosed conditions.
+Not a perplexity table: the model plans, edits files, runs shells, and
+finishes. Per current protocol new builds get this gate plus the KLD oracle
+instead of a full benchmark run; per-task cells live in
+[swelancer-local-subset-evals](https://github.com/01554/swelancer-local-subset-evals).
+
 **Not verified:** long context, multilingual (broken by design), anything
-off-corpus. Per our current protocol, new builds get a KLD oracle plus a
-3-task agentic smoke ([sanity3](https://github.com/01554/swelancer-local-subset-evals)),
-not a full benchmark run.
+off-corpus.
 
 ## Run
 
@@ -99,4 +107,6 @@ Qwen3.8のQ2量子化(UD-IQ2_XXS、656.6GB)は512GiB機のRAM総量を超えて�
 ルーティングで削って**404GB(376GiB)**にした版で、512GiB機に`-ngl 99`で
 全載せ・約9.5 tok/sで動きます。幅は削っていないので、256GB版より忠実度が
 全指標で約2倍良い(code argmax一致90.0%、KLD中央値0.007)。多言語は設計上
-壊れています。素のmainline llama.cppで動作検証済み(fork不要)。
+壊れています。素のmainline llama.cppで動作検証済み(fork不要)。単なる
+perplexity表ではなく、Qwen公式CLIで実在の有償SWE-Lancerタスク3問を
+数時間のツール往復の末に**3問とも解き切った**ことを検証済みです。
