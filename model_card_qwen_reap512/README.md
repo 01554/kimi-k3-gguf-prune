@@ -75,8 +75,16 @@ real, paid SWE-Lancer tasks end-to-end** — multi-hour tool-calling sessions
 (29 / 74 / 185 minutes) against a real React Native codebase — and **solved
 all three** ($2,000 in original prize value) under the disclosed conditions.
 Not a perplexity table: the model plans, edits files, runs shells, and
-finishes. Per current protocol new builds get this gate plus the KLD oracle
-instead of a full benchmark run; per-task cells live in
+finishes.
+
+An owner-requested extension then ran the five hard tasks (the ones a 2-bit
+K2.7 baseline failed): **2/5, $6,000** — including the heaviest task in the
+set (a ~104k-token issue) solved in **99 minutes where the streamed unpruned
+parent needed 183**, resident speed converting directly into solve time.
+Total across all eight: **5/8, $8,000** vs the parent's 7/8 — the KLD
+ladder (parent > this build > the 256 GB sibling) reproduces exactly as a
+bench ladder (7/8 > 5/8 > 3/8). Fidelity costs capability; this build is
+the measured middle point, and every cell is public:
 [swelancer-local-subset-evals](https://github.com/01554/swelancer-local-subset-evals).
 
 **Verified operating envelope** — every number on this card was measured at
