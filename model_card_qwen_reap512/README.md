@@ -43,6 +43,9 @@ Like every calibration-pruned build: **what the corpus leaves out is what
 gets deleted.** Non-English languages and off-domain abilities are
 deliberately sacrificed.
 
+
+**Provenance**: the exact pruning plan is published — [`plans/reap_plan_qwen_304.json`](https://github.com/01554/kimi-k3-gguf-prune/tree/main/plans) (sha256 `299b756b01231c43…`, full hash in SHA256SUMS); plan + source quant + the MIT slicer reproduce this file's bytes. A split-half robustness run for the Qwen counts is queued.
+
 ## Reading the quality numbers
 
 Measured exactly as on the [256 GB sibling's card](https://huggingface.co/hellohazime/Qwen3.8-2.4T-A95B-REAP-256GB-GGUF)

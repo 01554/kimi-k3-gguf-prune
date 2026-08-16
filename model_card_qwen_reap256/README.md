@@ -52,6 +52,9 @@ Width selection uses llama-imatrix's per-expert stats on the
 `ffn_down_exps` input — the squared activations of each intermediate
 channel — summed per 256-channel superblock.
 
+
+**Provenance**: the exact pruning plan is published — [`plans/plan_ew_qwen_304x6.json`](https://github.com/01554/kimi-k3-gguf-prune/tree/main/plans) (sha256 `22aea5cfbc36dae5…`, full hash in SHA256SUMS); plan + source quant + the MIT slicer reproduce this file's bytes. A split-half robustness run for the Qwen counts is queued (the shipped counts archive is aggregate-only).
+
 ## Reading the quality numbers
 
 **How they were measured.** ~128k tokens each of held-out English (FineWeb,

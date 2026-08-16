@@ -56,6 +56,9 @@ and agentic use is untested here. For coding agents, use
 Full write-up (Japanese):
 [枝刈りKimi K3の日本語版を作って、ELYZA-tasks-100で比べた](https://zenn.dev/hellohazime/articles/kimi_k3_reap640ja_elyza)
 
+
+**Provenance**: the exact pruning plan is published — [`plans/reap_plan_640ja.json`](https://github.com/01554/kimi-k3-gguf-prune/tree/main/plans) (sha256 `30b862a465790480…`, full hash in SHA256SUMS); plan + source quant + the MIT slicer reproduce this file's bytes. Split-half: calibrating on Japanese alone vs Chinese alone agrees on 83.8% of the keep-set (oracle retention 89–91%) — see plans/README.md.
+
 ## Verified vs. not verified
 
 Honest scorecard: exactly what has been measured, and what has not.

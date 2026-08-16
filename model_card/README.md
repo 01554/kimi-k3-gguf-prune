@@ -36,6 +36,9 @@ Both run at ~3.0 tok/s decode / ~48 tok/s prefill on a Mac Studio M3 Ultra
 keep-set (same saliency ranking), so the pair isolates the experts-vs-bits
 trade cleanly.
 
+
+**Provenance**: the exact pruning plan is published — [`plans/reap_plan_640.json`](https://github.com/01554/kimi-k3-gguf-prune/tree/main/plans) (sha256 `0c8d08e17007a1a4…`, full hash in SHA256SUMS); plan + source quant + the MIT slicer reproduce this file's bytes. Same for REAP576: [`plans/reap_plan_576.json`](https://github.com/01554/kimi-k3-gguf-prune/tree/main/plans) (sha256 `d536e46c648e5e25…`). Both plans re-verified equal to top-N of the published saliency archive; a source-level split-half robustness study (code↔code retention 84–90%, web-en↔code 66% — domain splits, harsher than random halves) is in [`plans/README.md`](https://github.com/01554/kimi-k3-gguf-prune/tree/main/plans).
+
 ## Download one build, not the repo
 
 **A full-repo download fetches both builds (~920 GB). Pick one:**
