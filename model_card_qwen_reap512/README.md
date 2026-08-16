@@ -21,6 +21,10 @@ prunes the experts an **English + code** deployment doesn't route to, keeping
 the healthier Q2 quantization intact: **404 GB (376 GiB), fully resident on a
 512 GiB Mac at ~9.5 tok/s.**
 
+**No fork, no PR branch, no custom runtime.** This file loads and generates
+on stock mainline llama.cpp — verified by running it there (greedy outputs
+identical to our fork). Download and `llama-server`, nothing else.
+
 | | |
 |---|---|
 | experts | 304 of 512 per MoE layer (uniform), selected by measured routing counts; **width untouched** (unlike our [256 GB sibling](https://huggingface.co/hellohazime/Qwen3.8-2.4T-A95B-REAP-256GB-GGUF)) |

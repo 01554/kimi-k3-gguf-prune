@@ -30,7 +30,8 @@ code** deployment actually uses, along two axes at once —
 
 Result: **246 GB (229 GiB)**, quantization untouched — every surviving byte
 is byte-identical to the UD-IQ1_S it came from (1.56 bpw experts, no
-requantization anywhere).
+requantization anywhere). **And no fork, no PR branch, no custom runtime:
+it loads and generates on stock mainline llama.cpp, verified.**
 
 | | |
 |---|---|
