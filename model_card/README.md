@@ -53,6 +53,26 @@ hf download hellohazime/Kimi-K3-REAP-512GB-GGUF --include "REAP576-IQ2_XXS/*" --
 
 `hf download` resumes interrupted transfers.
 
+## Fidelity vs. the unpruned quant (KLD, measured 2026-08-19)
+
+REAP576 was carved from Unsloth's UD-IQ2_XXS (711 GB, 896 experts). Teacher-forced
+on held-out text (2048-token windows), with the unpruned quant's own logits as
+truth:
+
+| held-out | mean KLD | median KLD | 99th pct | argmax agreement | PPL ratio |
+|---|---:|---:|---:|---:|---:|
+| code | 0.094 | **0.004** | 1.55 | **92.8%** | ×1.08 |
+| English | 0.180 | 0.035 | 2.42 | 85.2% | ×1.18 |
+
+Unpruned reference on the same text: PPL 1.767 (code) / 6.313 (en).
+
+How to read it: on code — the calibration target — half of all tokens are
+essentially untouched (median KLD 0.004) and the top-1 prediction survives
+**92.8%** of the time, the highest fidelity of any build in this project.
+English drifts about twice as far, which is the en+code corpus doing what it
+was asked to do. Damage concentrates in a thin tail (99th pct 1.55 on code),
+not spread evenly — perplexity alone would hide that shape.
+
 ## Which one
 
 **REAP640-IQ1_S** is the proven build: driven end-to-end by Moonshot's
